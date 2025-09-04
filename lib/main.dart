@@ -14,7 +14,12 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => CartModel(),
+      create: (context) {
+        final cartModel = CartModel();
+        cartModel.loadCartItems();
+        cartModel.loadShopItems();
+        return cartModel;
+      },
       child: MaterialApp(
         theme: ThemeData(
           appBarTheme: const AppBarTheme(

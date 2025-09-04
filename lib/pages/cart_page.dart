@@ -48,13 +48,16 @@ class CartPage extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: ListTile(
-                                leading: Image.asset(item[2], height: 36),
-                                title: Text(item[0]),
+                                leading: Image.asset(
+                                  item['imagePath'],
+                                  height: 36,
+                                ),
+                                title: Text(item['itemName']),
                                 subtitle: Text(
                                   NumberFormat.currency(
                                     locale: 'en_US',
                                     symbol: '\$',
-                                  ).format(double.parse(item[1])),
+                                  ).format(double.parse(item['itemPrice'])),
                                 ),
                                 trailing: IconButton(
                                   onPressed: () => cart.removeFromCart(index),

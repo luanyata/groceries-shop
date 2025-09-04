@@ -1,41 +1,132 @@
 import 'package:flutter/material.dart';
+import 'package:hello/services/api_service.dart';
 
 class CartModel extends ChangeNotifier {
-  final List _shopItems = [
-    // [itemName, itemPrice, imagePath, color]
-    ["Avocado", "4.00", "lib/images/abacate.png", Colors.green],
-    ["Banana", "2.00", "lib/images/banana.png", Colors.yellow],
-    ["Strawberry", "4.50", "lib/images/morango.png", Colors.red],
-    ["Grapes", "3.00", "lib/images/uva.png", Colors.purple],
-    ["Watermelon", "5.00", "lib/images/melancia.png", Colors.green],
-  ];
+  final ApiService _apiService = ApiService();
 
-  // List cart items
-  final List _cartItems = [];
+  List<dynamic> _shopItems = [];
+  List<dynamic> _cartItems = [];
+  bool _isLoading = false;
+  String? _error;
 
-  get shopItems => _shopItems;
-  get cartItems => _cartItems;
+  // Getters
+  List<dynamic> get shopItems => _shopItems;
+  List<dynamic> get cartItems => _cartItems;
+  bool get isLoading => _isLoading;
+  String? get error => _error;
 
-  // Add item to cart
-  void addToCart(int index) {
-    _cartItems.add(_shopItems[index]);
-    notifyListeners();
+  // Carregar itens da loja da API
+  Future<void> loadShopItems() async {
+    _setLoading(true);
+    try {
+      _shopItems = await _apiService.getShopItems();
+      _error = null;
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _setLoading(false);
+    }
   }
 
-  // Remove item from cart
-  void removeFromCart(int index) {
-    _cartItems.removeAt(index);
-    notifyListeners();
+  // Carregar itens do carrinho da API
+  Future<void> loadCartItems() async {
+    _setLoading(true);
+    try {
+      _cartItems = await _apiService.getCartItems();
+      _error = null;
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _setLoading(false);
+    }
   }
 
-  // Calculate total price
+  // Adicionar item ao carrinho
+  Future<void> addToCart(int shopItemIndex) async {
+    try {
+      final shopItem = _shopItems[shopItemIndex];
+      final success = await _apiService.addItemToCart(shopItem['id']);
+
+      if (success) {
+        // Recarrega os itens do carrinho para manter sincronia
+        await loadCartItems();
+      } else {
+        _error = 'Failed to add item to cart';
+        notifyListeners();
+      }
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+    }
+  }
+
+  // Remover item do carrinho
+  Future<void> removeFromCart(int cartItemIndex) async {
+    try {
+      final cartItem = _cartItems[cartItemIndex];
+
+      // Verifica se cartId existe e não é null
+      final cartId = cartItem['cartId'];
+      if (cartId == null) {
+        _error = 'Cart item ID is missing';
+        notifyListeners();
+        return;
+      }
+
+      final success = await _apiService.removeItemFromCart(cartId);
+
+      if (success) {
+        // Remove localmente e depois recarrega para garantir sincronia
+        _cartItems.removeAt(cartItemIndex);
+        notifyListeners();
+        await loadCartItems();
+      } else {
+        _error = 'Failed to remove item from cart';
+        notifyListeners();
+      }
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+    }
+  }
+
+  // Calcular preço total
   double getTotalPrice() {
-    return _cartItems.fold(0, (total, item) => total + double.parse(item[1]));
+    return _cartItems.fold(0, (total, item) {
+      final priceString = item['itemPrice'];
+      if (priceString == null) return total;
+
+      try {
+        return total + double.parse(priceString);
+      } catch (e) {
+        // Se não conseguir fazer parse do preço, ignora este item
+        return total;
+      }
+    });
   }
 
-  // Clear cart
-  void clearCart() {
-    _cartItems.clear();
+  // Método helper para obter o preço total como string formatada
+  String getTotalPriceString() {
+    return getTotalPrice().toStringAsFixed(2);
+  }
+
+  // Limpar carrinho
+  Future<void> clearCart() async {
+    try {
+      final success = await _apiService.clearCart();
+      if (success) {
+        _cartItems.clear();
+        notifyListeners();
+      }
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+    }
+  }
+
+  // Método privado para controlar loading
+  void _setLoading(bool loading) {
+    _isLoading = loading;
     notifyListeners();
   }
 }

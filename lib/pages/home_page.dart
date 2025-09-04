@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hello/components/grocery_item_tile.dart';
 import 'package:hello/model/cart_model.dart';
 import 'package:hello/pages/cart_page.dart';
+import 'package:hello/utils/color_from_string.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
@@ -70,10 +71,12 @@ class HomePage extends StatelessWidget {
                     childAspectRatio: 1 / 1.3,
                   ),
                   itemBuilder: (context, index) => GroceryItemTile(
-                    itemName: value.shopItems[index][0],
-                    itemPrice: value.shopItems[index][1],
-                    imagePath: value.shopItems[index][2],
-                    color: value.shopItems[index][3],
+                    itemName: value.shopItems[index]['itemName'],
+                    itemPrice: value.shopItems[index]['itemPrice'],
+                    imagePath: value.shopItems[index]['imagePath'],
+                    color: ColorUtils.getColorFromString(
+                      value.shopItems[index]['color'],
+                    ),
                     onPressed: () {
                       Provider.of<CartModel>(
                         context,
