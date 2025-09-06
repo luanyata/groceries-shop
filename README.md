@@ -2,6 +2,15 @@
 
 Um aplicativo completo de compras de supermercado desenvolvido com Flutter e Node.js. Este projeto demonstra conceitos fundamentais do Flutter, incluindo gerenciamento de estado com Provider, consumo de APIs REST, arquitetura baseada em componentes e animações de UI.
 
+## 📱 Screenshots
+
+<div align="center">
+  <img src="prints/info.png" width="200" alt="Tela Inicial" />
+  <img src="prints/home.png" width="200" alt="Lista de Produtos" />
+  <img src="prints/home-check-product.png" width="200" alt="Produto Adicionado" />
+  <img src="prints/cart.png" width="200" alt="Carrinho de Compras" />
+</div>
+
 ## ✨ Features
 
 ### Frontend (Flutter)
@@ -32,12 +41,13 @@ lib/
 │   └── cart_model.dart
 ├── pages/              # Telas da aplicação
 │   ├── intro_page.dart
+│   ├── login_page.dart
 │   ├── home_page.dart
 │   └── cart_page.dart
 ├── services/           # Comunicação com APIs
 │   └── api_service.dart
 ├── utils/              # Utilitários e helpers
-│   └── color_from_string.dart
+│   └── color_extensions.dart
 └── main.dart
 ```
 
@@ -188,6 +198,12 @@ curl http://localhost:3000/api/cart
 }
 ```
 
+## 🎨 Inspiração e Design
+
+Este projeto foi inspirado no conteúdo educacional e design patterns apresentados por [**Mitch Koko**](https://mitchkoko.app/). 
+
+Agradecimentos especiais pelo excelente conteúdo sobre desenvolvimento Flutter e pelas práticas de clean code demonstradas em seus tutoriais.
+
 ## 🤝 Contribuindo
 
 1. Faça um fork do projeto
@@ -199,3 +215,10 @@ curl http://localhost:3000/api/cart
 ## 📄 Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para detalhes.
+
+---
+
+<div align="center">
+  <p>Desenvolvido com ❤️ usando Flutter</p>
+  <p>Inspirado em <a href="https://mitchkoko.app/">Mitch Koko</a></p>
+</div>
